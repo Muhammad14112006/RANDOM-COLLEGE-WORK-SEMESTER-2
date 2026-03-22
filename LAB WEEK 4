@@ -1,0 +1,229 @@
+using System;
+using static System.StringComparison;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using System.ComponentModel;
+
+namespace C1L4
+{
+    class Book
+    {
+        public string title;
+        public string[] authors = new string[4];
+        public int numAuthors;
+        public string publisher;
+        public string isbn;
+        public double price;
+        public int stock;
+        public int year;
+        public Book()
+        {
+            title = "";
+            isbn = "";
+            publisher = "";
+        }
+
+        //title operations
+        public void SetTitle(string t) => title = t;
+        public void ShowTitle()
+        {
+            Console.WriteLine("Title : {0}", title);
+            Console.ReadKey();
+        }
+        public bool CheckTitle(string t) => title.Equals(t, OrdinalIgnoreCase);
+
+        //stock operations
+        public void SetStock(int s) => stock = s;
+        public void GetStock()
+        {
+            Console.WriteLine("Stock: {0}", stock);
+            Console.ReadKey();
+        }
+        public void UpdateStock(int s) => stock += s;
+
+        //ISBN & Publisher operations
+        public void SetISBN(string i) => isbn = i;
+        public bool CheckISBN(string i) => isbn.Equals(i, OrdinalIgnoreCase);
+        public void SetPublsisher(string p) => publisher = p;
+
+        //author operations
+        public void SetAuthors(string[] name)
+        {
+            numAuthors = Math.Min(name.Length, 4);
+            for (int i = 0; i < numAuthors; i++)
+            {
+                authors[i] = name[i];
+            }
+        }
+
+        //Display all
+        public void ShowBookInfo()
+        {
+            Console.WriteLine($"[{isbn}] {title}");
+            Console.WriteLine($"Publisher: {publisher} | Year: {year}");
+            Console.Write("Authors: ");
+            for (int i = 0; i < numAuthors; i++)
+            {
+                Console.Write(authors[i] + (i < numAuthors - 1 ? ", " : " "));
+            }
+            Console.WriteLine($"Price: ${price} | In Stock: {stock}");
+        }
+    }
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Book[] library = new Book[100];
+            int count = 0;
+            bool exit = false;
+
+            while(!exit)
+            {
+                Console.WriteLine("----Book Management System----");
+                Console.WriteLine("1. Add");
+                Console.WriteLine("2. Search Title");
+                Console.WriteLine("3. Search ISBN");
+                Console.WriteLine("4. Update Stock");
+                Console.WriteLine("5. Exit");
+                Console.Write("\nSelect an option: ");
+                string choice = Console.ReadLine();
+                
+                switch(choice)
+                {
+                    case "1":
+                        {
+                            AddNewBook(library, ref count);
+                            break;
+                        }
+                    case "2":
+                        {
+                            SearchByTitle(library, count);
+                            break;
+                        }
+                    case "3":
+                        {
+                            SearchByISBN(library, count);
+                            break;
+                        }
+                    case "4":
+                        {
+                            ChangeStock(library, count);
+                            break;
+                        }
+                    case "5":
+                        {
+                            exit = true;
+                            break;
+                        }
+                    default:
+                        {
+                            Console.WriteLine("Invalid option. Please try again.");
+                            Console.ReadKey();
+                            break;
+                        }
+                }
+            }
+        }
+        //Helper Functions
+        static void AddNewBook(Book[] lib, ref int count)
+        {
+            if (count >= 100)
+            {
+                Console.WriteLine("Library is full!");
+                Console.ReadKey();
+                return;
+            }
+            Book b = new Book();
+            Console.Write("Enter Title: ");
+            b.title = Console.ReadLine();
+            Console.Write("Enter ISBN: ");
+            b.isbn = Console.ReadLine();
+            Console.Write("Enter Publisher: ");
+            b.publisher = Console.ReadLine();
+            Console.Write("Enter year: ");
+            b.year = int.Parse(Console.ReadLine());
+            Console.Write("Enter price: ");
+            b.price = double.Parse(Console.ReadLine());
+            Console.Write("Initial Stock: ");
+            b.stock = int.Parse(Console.ReadLine());
+            Console.Write("Enter number of authors (max 4): ");
+            int n = int.Parse(Console.ReadLine());
+            string[] names = new string[n];
+            for (int i = 0; i < n && i < 4; i++)
+            {
+                Console.Write($"Author {i + 1}: ");
+                names[i] = Console.ReadLine();
+            }
+            b.SetAuthors(names);
+            lib[count] = b;
+            count++;
+            Console.WriteLine("Book added successfully!");
+            Console.ReadKey();
+        }
+        static void SearchByTitle(Book[] lib, int count)
+        {
+            Console.Write("Enter title to Search: ");
+            string t = Console.ReadLine();
+            bool found = false;
+            for (int i = 0; i < count; i++)
+            {
+                if (lib[i].CheckTitle(t))
+                {
+                    lib[i].ShowBookInfo();
+                    found = true;
+                    Console.ReadKey();
+                    break;
+                }
+            }
+            if(!found)
+            {
+                Console.WriteLine("No book was found with that title.");
+                Console.ReadKey();
+            }
+        }
+        static void SearchByISBN(Book[] lib, int count)
+        {
+            Console.WriteLine("Enter ISBN to search: ");
+            string code = Console.ReadLine();
+            bool found = false;
+            for (int i = 0; i < count; i++)
+            {
+                if (lib[i].CheckISBN(code))
+                {
+                    lib[i].ShowBookInfo();
+                    found = true;
+                    Console.ReadKey();
+                    break;
+                }
+            }
+            if(!found)
+            {
+                Console.WriteLine("No book was found with that ISBN.");
+                Console.ReadKey();
+            }
+        }
+        static void ChangeStock(Book[]lib, int count)
+        {
+            Console.Write("Enter ISBN of the Book: ");
+            string code = Console.ReadLine();
+            for (int i = 0; i < count; i++)
+            {
+                if (lib[i].CheckISBN(code))
+                {
+                    Console.WriteLine("Current Stock: " + lib[i].stock + "\nEnter the amount to add or remove from the stock (- for removal)");
+                    int change = int.Parse(Console.ReadLine());
+                    lib[i].UpdateStock(change);
+                    Console.WriteLine("New Stock: " + lib[i].stock);
+                    Console.ReadKey();
+                    return;
+                }
+            }
+            Console.WriteLine("Book not found");
+        }
+
+    }
+}
