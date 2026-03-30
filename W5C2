@@ -1,0 +1,342 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace CHALLENGE_2
+{
+    class MUser
+    {
+        public string username;
+        public string password;
+        public string role;
+
+        public MUser(string username, string password, string role)
+        {
+            this.username = username;
+            this.password = password;
+            this.role = role;
+        }
+    }
+
+    class Product
+    {
+        public string name;
+        public string category;
+        public double price;
+        public int stock;
+        public int threshold;
+
+        public Product(string name, string category, double price, int stock, int threshold)
+        {
+            this.name = name;
+            this.category = category;
+            this.price = price;
+            this.stock = stock;
+            this.threshold = threshold;
+        }
+
+        public double getTax()
+        {
+            if (category.ToLower() == "grocery")
+                return price * 0.10;
+            else if (category.ToLower() == "fruit")
+                return price * 0.05;
+            else
+                return price * 0.15;
+        }
+    }
+
+    class Customer
+    {
+        public List<Product> cart = new List<Product>();
+
+        public void buyProduct(Product p, int quantity)
+        {
+            if (p.stock >= quantity)
+            {
+                p.stock -= quantity;
+                for (int i = 0; i < quantity; i++)
+                {
+                    cart.Add(p);
+                }
+                Console.WriteLine("Product added to cart!");
+            }
+            else
+            {
+                Console.WriteLine("Not enough stock!");
+            }
+        }
+
+        public void generateInvoice()
+        {
+            Console.Clear();
+            Console.WriteLine("=======================================================================");
+            Console.WriteLine("                             INVOICE");
+            Console.WriteLine("=======================================================================");   
+            double total = 0;
+            foreach (Product p in cart)
+            {
+                double tax = p.getTax();
+                double priceWithTax = p.price + tax;
+                Console.WriteLine($"{p.name} - Price: {p.price} + Tax: {tax}");
+                total += priceWithTax;
+            }
+            Console.WriteLine("Total Bill: " + total);
+            Console.WriteLine("=======================================================================");
+            Console.ReadKey();
+        }
+    }
+
+    class Program
+    {
+        static List<MUser> users = new List<MUser>();
+        static List<Product> products = new List<Product>();
+        static string path = "users.txt";
+
+        static void Main(string[] args)
+        {
+            loadUsers();
+            int option;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("=======================================================================");
+                Console.WriteLine("           Welcome to the Inventory Management System");    
+                Console.WriteLine("=======================================================================");
+                Console.WriteLine("\n1. SignIn");
+                Console.WriteLine("2. SignUp");
+                Console.WriteLine("3. Exit");
+                Console.Write("Enter choice: ");
+                option = int.Parse(Console.ReadLine());
+                Console.WriteLine("=======================================================================");
+                Console.ReadKey();
+
+                if (option == 1)
+                {
+                    MUser user = signIn();
+                    if (user != null)
+                    {
+                        if (user.role == "admin")
+                            adminMenu();
+                        else
+                            customerMenu();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid user!");
+                    }
+                }
+                else if (option == 2)
+                {
+                    signUp();
+                }
+
+            } while (option != 3);
+        }
+
+        static void signUp()
+        {
+            Console.Write("Enter Username: ");
+            string u = Console.ReadLine();
+            Console.Write("Enter Password: ");
+            string p = Console.ReadLine();
+            Console.Write("Enter Role (admin/customer): ");
+            string r = Console.ReadLine();
+
+            MUser user = new MUser(u, p, r);
+            users.Add(user);
+
+            StreamWriter file = new StreamWriter(path, true);
+            file.WriteLine(u + "," + p + "," + r);
+            file.Flush();
+            file.Close();
+        }
+
+        static MUser signIn()
+        {
+            Console.Clear();
+            Console.WriteLine("=======================================================================");
+            Console.WriteLine("                              SIGN IN");
+            Console.WriteLine("=======================================================================");
+            Console.Write("Enter Username: ");
+            string u = Console.ReadLine();
+            Console.Write("Enter Password: ");
+            string p = Console.ReadLine();
+            Console.WriteLine("=======================================================================");   
+            Console.ReadKey();
+            foreach (MUser user in users)
+            {
+                if (user.username == u && user.password == p)
+                {
+                    return user;
+                }
+            }
+            return null;
+        }
+
+        static void loadUsers()
+        {
+            if (File.Exists(path))
+            {
+                string[] lines = File.ReadAllLines(path);
+                foreach (string line in lines)
+                {
+                    string[] data = line.Split(',');
+                    users.Add(new MUser(data[0], data[1], data[2]));
+                }
+            }
+        }
+
+        static void adminMenu()
+        {
+            int option;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("=======================================================================");
+                Console.WriteLine("                            ADMIN MENU");
+                Console.WriteLine("=======================================================================");
+                Console.WriteLine("1. Add Product");
+                Console.WriteLine("2. View All Products");
+                Console.WriteLine("3. Highest Price Product");
+                Console.WriteLine("4. View Sales Tax");
+                Console.WriteLine("5. Products to Order");
+                Console.WriteLine("6. Exit");
+                Console.Write("Enter choice: ");
+                option = int.Parse(Console.ReadLine());
+                Console.WriteLine("=======================================================================");
+                Console.ReadKey();
+                if (option == 1) addProduct();
+                else if (option == 2) viewProducts();
+                else if (option == 3) highestPrice();
+                else if (option == 4) viewTax();
+                else if (option == 5) lowStock();
+
+            } while (option != 6);
+        }
+
+        static void addProduct()
+        {
+            Console.Clear();
+            Console.WriteLine("=======================================================================");
+            Console.WriteLine("                            ADD PRODUCT");
+            Console.WriteLine("=======================================================================");
+            Console.Write("Name: ");
+            string n = Console.ReadLine();
+            Console.Write("Category: ");
+            string c = Console.ReadLine();
+            Console.Write("Price: ");
+            double p = double.Parse(Console.ReadLine());
+            Console.Write("Stock: ");
+            int s = int.Parse(Console.ReadLine());
+            Console.Write("Threshold: ");
+            int t = int.Parse(Console.ReadLine());
+            Console.WriteLine("=======================================================================");
+            Console.ReadKey();
+
+            products.Add(new Product(n, c, p, s, t));
+        }
+
+        static void viewProducts()
+        {
+            Console.Clear();
+            Console.WriteLine("=======================================================================");
+            Console.WriteLine("                               VIEW PRODUCTS");
+            Console.WriteLine("=======================================================================");
+            foreach (Product p in products)
+            {
+                Console.WriteLine($"{p.name} | {p.category} | {p.price} | Stock: {p.stock}");
+            }
+            Console.WriteLine("=======================================================================");
+            Console.ReadKey();
+        }
+
+        static void highestPrice()
+        {
+            Console.Clear();
+            Console.WriteLine("=======================================================================");
+            Console.WriteLine("                          HIGHEST PRICE PRODUCT");
+            Console.WriteLine("=======================================================================");
+            Product max = products[0];
+            foreach (Product p in products)
+            {
+                if (p.price > max.price)
+                    max = p;
+            }
+            Console.WriteLine("Highest Price Product: " + max.name);
+            Console.WriteLine("=======================================================================");
+            Console.ReadKey();
+        }
+
+        static void viewTax()
+        {
+            Console.Clear();
+            Console.WriteLine("=======================================================================");
+            Console.WriteLine("                             VIEW SALES TAX");
+            Console.WriteLine("=======================================================================");
+            foreach (Product p in products)
+            {
+                Console.WriteLine($"{p.name} Tax: {p.getTax()}");
+            }
+            Console.WriteLine("=======================================================================");
+            Console.ReadKey();
+        }
+
+        static void lowStock()
+        {
+            Console.Clear();
+            Console.WriteLine("=======================================================================");
+            Console.WriteLine("                             PRODUCTS TO ORDER");
+            Console.WriteLine("=======================================================================");
+            foreach (Product p in products)
+            {
+                if (p.stock < p.threshold)
+                    Console.WriteLine(p.name + " needs to be ordered");
+            }
+            Console.WriteLine("=======================================================================");
+            Console.ReadKey();
+        }
+
+        static void customerMenu()
+        {
+            Console.Clear();
+
+            Customer c = new Customer();
+            int option;
+            do
+            {
+                Console.WriteLine("=======================================================================");
+                Console.WriteLine("                            CUSTOMER MENU");
+                Console.WriteLine("=======================================================================");
+                Console.WriteLine("1. View Products");
+                Console.WriteLine("2. Buy Product");
+                Console.WriteLine("3. Generate Invoice");
+                Console.WriteLine("4. Exit");
+                Console.Write("Enter choice: ");
+                option = int.Parse(Console.ReadLine());
+
+                if (option == 1) viewProducts();
+                else if (option == 2)
+                {
+                    Console.Write("Enter product name: ");
+                    string name = Console.ReadLine();
+                    Product p = products.Find(x => x.name == name);
+                    if (p != null)
+                    {
+                        Console.Write("Enter quantity: ");
+                        int q = int.Parse(Console.ReadLine());
+                        c.buyProduct(p, q);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Product not found!");
+                    }
+                }
+                else if (option == 3)
+                {
+                    c.generateInvoice();
+                }
+            } while (option != 4);
+        }
+    }
+}
