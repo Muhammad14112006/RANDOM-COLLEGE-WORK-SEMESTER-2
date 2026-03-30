@@ -1,0 +1,215 @@
+using System;
+
+namespace Challenge1
+{
+    class MyPoint
+    {
+        public int x;
+        public int y;
+
+        public MyPoint()
+        {
+            x = 0;
+            y = 0;
+        }
+
+        public MyPoint(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public void setXY(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double distanceFromZero()
+        {
+            return Math.Sqrt((x * x) + (y * y));
+        }
+    }
+
+    class MyLine
+    {
+        public MyPoint begin;
+        public MyPoint end;
+
+        public MyLine(int x1, int y1, int x2, int y2)
+        {
+            begin = new MyPoint(x1, y1);
+            end = new MyPoint(x2, y2);
+        }
+
+        public double getLength()
+        {
+            return Math.Sqrt(Math.Pow(end.x - begin.x, 2) + Math.Pow(end.y - begin.y, 2));
+        }
+
+        public double getGradient()
+        {
+            if (end.x - begin.x == 0)
+            {
+                Console.WriteLine("Gradient is undefined (vertical line)");
+                return 0;
+            }
+            return (double)(end.y - begin.y) / (end.x - begin.x);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            MyLine line = null;
+            int choice;
+
+            do
+            {
+                Console.WriteLine("==========================================================");
+                Console.WriteLine("                         MENU                         ");
+                Console.WriteLine("==========================================================");
+                Console.WriteLine("1. Make a Line");
+                Console.WriteLine("2. Update Begin Point");
+                Console.WriteLine("3. Update End Point");
+                Console.WriteLine("4. Show Begin Point");
+                Console.WriteLine("5. Show End Point");
+                Console.WriteLine("6. Get Length");
+                Console.WriteLine("7. Get Gradient");
+                Console.WriteLine("8. Distance of Begin from Origin");
+                Console.WriteLine("9. Distance of End from Origin");
+                Console.WriteLine("10. Exit");
+                Console.WriteLine("==========================================================");
+                Console.Write("\nEnter choice: ");
+                choice = int.Parse(Console.ReadLine());
+
+                if (choice == 1)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    CREATE A LINE                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.Write("Enter begin point x: ");
+                    int x1 = int.Parse(Console.ReadLine());
+                    Console.Write("Enter begin point y: ");
+                    int y1 = int.Parse(Console.ReadLine());
+                    Console.Write("Enter end point x: ");
+                    int x2 = int.Parse(Console.ReadLine());
+                    Console.Write("Enter end point y: ");
+                    int y2 = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter any key to proceed...");
+                   Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                    line = new MyLine(x1, y1, x2, y2);
+                    Console.WriteLine("Line created!");
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.ReadKey();
+                }
+                else if (line == null)
+                {
+                    Console.WriteLine("Please create a line first!");
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.ReadKey();
+                }
+                else if (choice == 2)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    UPDATE BEGIN POINT                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.Write("Enter new begin x: ");
+                    int x = int.Parse(Console.ReadLine());
+                    Console.Write("Enter new begin y: ");
+                    int y = int.Parse(Console.ReadLine());
+                    line.begin.setXY(x, y);
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                }
+                else if (choice == 3)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    UPDATE END POINT                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.Write("Enter new end x: ");
+                    int x = int.Parse(Console.ReadLine());
+                    Console.Write("Enter new end y: ");
+                    int y = int.Parse(Console.ReadLine());
+                    line.end.setXY(x, y);
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                }
+                else if (choice == 4)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    BEGIN POINT                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("Begin Point: (" + line.begin.x + ", " + line.begin.y + ")");
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                }
+                else if (choice == 5)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    END POINT                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("End Point: (" + line.end.x + ", " + line.end.y + ")");
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                }
+                else if (choice == 6)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    LENGTH OF LINE                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("Length of line: " + line.getLength().ToString("F2"));
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                }
+                else if (choice == 7)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    GRADIENT OF LINE                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("Gradient of line: " + line.getGradient().ToString("F2"));
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                }
+                else if (choice == 8)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    DISTANCE OF BEGIN FROM ORIGIN                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("Distance of begin from origin: " + line.begin.distanceFromZero().ToString("F2"));
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                }
+                else if (choice == 9)
+                {
+                    Console.Clear();
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("                    DISTANCE OF END FROM ORIGIN                     ");
+                    Console.WriteLine("===========================================================");
+                    Console.WriteLine("Distance of end from origin: " + line.end.distanceFromZero().ToString("F2"));
+                    Console.WriteLine("\nEnter any key to return to menu...");
+                    Console.WriteLine("===========================================================");
+                    Console.ReadKey();
+                }
+
+            } while (choice != 10);
+        }
+    }
+}
